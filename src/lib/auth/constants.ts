@@ -1,0 +1,9 @@
+export const SESSION_COOKIE_NAME = 'session';
+export const SESSION_ROLE_COOKIE = 'session_role';
+export const SESSION_MAX_AGE_MS = 60 * 60 * 24 * 5 * 1000;
+export const SESSION_MAX_AGE_SEC = SESSION_MAX_AGE_MS / 1000;
+export const REMEMBER_ME_MAX_AGE_MS = 60 * 60 * 24 * 30 * 1000;
+export const REMEMBER_ME_MAX_AGE_SEC = REMEMBER_ME_MAX_AGE_MS / 1000;
+export const ID_TOKEN_COOKIE_MAX_AGE_SEC = 60 * 60;
+export const REMEMBER_EMAIL_KEY = 'eduvantage:remember-email';
+export const REMEMBER_STUDENT_EMAIL_KEY = 'eduvantage:remember-student-email';
