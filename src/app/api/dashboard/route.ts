@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { isApiGuardResponse, requireAuthorizedSession } from '@/lib/auth/api-guard';
+import { ensureAdminSampleData } from '@/lib/demo/seed';
 import {
   getCategoryPieData,
   getCourseRatingAverage,
@@ -15,6 +16,11 @@ export async function GET() {
   if (isApiGuardResponse(session)) return session;
 
   try {
+    await ensureAdminSampleData(session.workspaceOwnerId, {
+      email: session.email,
+      name: session.name,
+    });
+
     const ownerId = session.workspaceOwnerId;
     const [stats, revenue, categoryPie, courseStatusPie, trainers, avgRating] = await Promise.all([
       getDashboardStats(ownerId),

@@ -3,6 +3,7 @@ import { mapAdminAuthError } from '@/lib/auth/errors';
 import { signInWithEmailPassword } from '@/lib/auth/firebase-rest';
 import { buildAuthResponse, requireFirebaseAuth, sessionUserFromToken } from '@/lib/auth/server';
 import { resolveWorkspaceOwnerId } from '@/lib/auth/workspace';
+import { recordLoginSession } from '@/lib/auth/track-login';
 import { getStudentByAuthUid } from '@/lib/firestore/students';
 import { apiError } from '@/lib/http/api-error';
 import { studentLoginSchema } from '@/lib/validation/enrollment';
@@ -36,6 +37,11 @@ export async function POST(request: NextRequest) {
 
     const user = sessionUserFromToken(decoded, {
       role: 'student',
+      studentId: student.id,
+      studentCode: student.studentCode,
+    });
+    await recordLoginSession(decoded, 'student', {
+      workspaceOwnerId: ownerId,
       studentId: student.id,
       studentCode: student.studentCode,
     });

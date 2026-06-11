@@ -150,6 +150,25 @@ export async function updateEnrollmentStatus(
   return getEnrollmentRequest(ownerId, id);
 }
 
+export async function seedEnrollmentRequestWithId(
+  ownerId: string,
+  id: string,
+  data: Omit<EnrollmentRequest, 'id'>,
+) {
+  const db = getAdminFirestore();
+  await ensureAppTables(db);
+  const now = FieldValue.serverTimestamp();
+  await appCollection(db, TABLE).doc(id).set(
+    {
+      ...data,
+      [OWNER_ID_FIELD]: ownerId,
+      createdAt: data.createdAt ? data.createdAt : now,
+      updatedAt: now,
+    },
+    { merge: true },
+  );
+}
+
 export async function listStudentEnrollments(ownerId: string, studentId: string) {
   const items = await listEnrollmentRequests(ownerId);
   return items.filter((e) => e.studentId === studentId);

@@ -5,6 +5,12 @@ import { getAdminFirestore } from '@/lib/firebase/admin';
 
 export const OWNER_ID_FIELD = 'ownerId';
 
+export async function ownerRecordExists(tableKey: string, ownerId: string, docId: string): Promise<boolean> {
+  const db = getAdminFirestore();
+  const snap = await appCollection(db, tableKey).doc(docId).get();
+  return snap.exists && recordOwnedBy(snap.data(), ownerId);
+}
+
 export function timestampToIso(value: unknown): string {
   if (value instanceof Timestamp) return value.toDate().toISOString();
   if (value && typeof value === 'object' && 'toDate' in value) {

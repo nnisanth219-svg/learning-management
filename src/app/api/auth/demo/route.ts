@@ -3,6 +3,7 @@ import { mapAdminAuthError } from '@/lib/auth/errors';
 import { signInWithEmailPassword } from '@/lib/auth/firebase-rest';
 import { buildAuthResponse, requireFirebaseAuth, sessionUserFromToken } from '@/lib/auth/server';
 import { clearWorkspaceOwnerCache } from '@/lib/auth/workspace';
+import { recordLoginSession } from '@/lib/auth/track-login';
 import { seedDemoData } from '@/lib/demo/seed';
 import { DEMO_USER } from '@/lib/demo/credentials';
 import { apiError } from '@/lib/http/api-error';
@@ -16,6 +17,7 @@ export async function POST() {
     if (!result.ok) return apiError(result.message ?? 'Demo setup failed.', 503);
     const signIn = await signInWithEmailPassword(DEMO_USER.email, DEMO_USER.password);
     const decoded = await getAdminAuth().verifyIdToken(signIn.idToken);
+    await recordLoginSession(decoded, 'admin', { workspaceOwnerId: result.ownerId });
     return buildAuthResponse(sessionUserFromToken(decoded, { role: 'admin' }), signIn.idToken);
   } catch (e) {
     return apiError(e instanceof Error ? e.message : mapAdminAuthError(e), 500);

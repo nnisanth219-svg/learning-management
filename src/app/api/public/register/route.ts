@@ -3,6 +3,7 @@ import { isEmailAlreadyExistsError, mapAdminAuthError } from '@/lib/auth/errors'
 import { signInWithEmailPassword, signUpWithEmailPassword } from '@/lib/auth/firebase-rest';
 import { buildAuthResponse, requireFirebaseAuth, sessionUserFromToken } from '@/lib/auth/server';
 import { resolveWorkspaceOwnerId } from '@/lib/auth/workspace';
+import { recordLoginSession } from '@/lib/auth/track-login';
 import type { EnrollmentRequest } from '@/data/types';
 import { getEnrollmentRequest, linkEnrollmentToStudent } from '@/lib/firestore/enrollment-requests';
 import { createStudentFromEnrollment, getStudentByAuthUid } from '@/lib/firestore/students';
@@ -60,6 +61,12 @@ async function completeRegistration(
       authUid: decoded.uid,
     });
   }
+
+  await recordLoginSession(decoded, 'student', {
+    workspaceOwnerId: ownerId,
+    studentId: student.id,
+    studentCode: student.studentCode!,
+  });
 
   const user = sessionUserFromToken(decoded, {
     role: 'student',

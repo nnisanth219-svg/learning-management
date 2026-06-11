@@ -110,6 +110,17 @@ export async function verifyCertificateByCode(ownerId: string, code: string) {
   return cert.status === 'active' ? cert : null;
 }
 
+export async function seedProgressWithId(ownerId: string, id: string, data: LearningProgress) {
+  const db = getAdminFirestore();
+  await ensureAppTables(db);
+  const now = FieldValue.serverTimestamp();
+  const { id: _id, ...rest } = data;
+  await appCollection(db, TABLE).doc(id).set(
+    { ...rest, [OWNER_ID_FIELD]: ownerId, createdAt: now, updatedAt: now },
+    { merge: true },
+  );
+}
+
 export async function seedCertificate(ownerId: string, id: string, data: IssuedCertificate) {
   const db = getAdminFirestore();
   await ensureAppTables(db);

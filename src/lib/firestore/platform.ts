@@ -26,6 +26,24 @@ export async function getPlatformSettings(): Promise<PlatformSettings | null> {
   };
 }
 
+export async function ensurePlatformSettings(
+  ownerId: string,
+  profile?: { email?: string; name?: string },
+) {
+  const db = getAdminFirestore();
+  await ensureAppTables(db);
+  await appCollection(db, TABLE).doc(PLATFORM_DOC).set(
+    {
+      ownerId,
+      ownerEmail: profile?.email ?? DEMO_USER.email,
+      ownerName: profile?.name ?? DEMO_USER.name,
+      sampleDataVersion: 1,
+      updatedAt: FieldValue.serverTimestamp(),
+    },
+    { merge: true },
+  );
+}
+
 export async function isPlatformAdmin(uid: string, email: string): Promise<boolean> {
   if (email.toLowerCase() === DEMO_USER.email.toLowerCase()) return true;
 

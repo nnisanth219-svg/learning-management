@@ -25,6 +25,7 @@ const API_ROUTES = [
   '/api/auth/demo',
   '/api/auth/forgot-password',
   '/api/auth/student/login',
+  '/api/users',
   '/api/student/dashboard',
   '/api/uploads',
 ] as const;

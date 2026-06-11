@@ -27,6 +27,21 @@ export async function listNotifications(ownerId: string) {
   return items.length ? items.sort((a, b) => b.createdAt.localeCompare(a.createdAt)) : NOTIFICATIONS;
 }
 
+export async function seedNotificationWithId(ownerId: string, id: string, data: Notification) {
+  const db = getAdminFirestore();
+  await ensureAppTables(db);
+  const { id: _id, ...rest } = data;
+  await appCollection(db, TABLE).doc(id).set(
+    {
+      ...rest,
+      [OWNER_ID_FIELD]: ownerId,
+      createdAt: FieldValue.serverTimestamp(),
+      updatedAt: FieldValue.serverTimestamp(),
+    },
+    { merge: true },
+  );
+}
+
 export async function createNotification(
   ownerId: string,
   input: Pick<Notification, 'title' | 'message' | 'type'>,

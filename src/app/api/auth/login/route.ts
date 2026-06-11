@@ -2,7 +2,9 @@ import { NextRequest } from 'next/server';
 import { mapAdminAuthError } from '@/lib/auth/errors';
 import { signInWithEmailPassword } from '@/lib/auth/firebase-rest';
 import { buildAuthResponse, requireFirebaseAuth, sessionUserFromToken } from '@/lib/auth/server';
-import { resolveWorkspaceOwnerId } from '@/lib/auth/workspace';
+import { clearWorkspaceOwnerCache, resolveWorkspaceOwnerId } from '@/lib/auth/workspace';
+import { recordLoginSession } from '@/lib/auth/track-login';
+import { ensureAdminSampleData } from '@/lib/demo/seed';
 import { isPlatformAdmin } from '@/lib/firestore/platform';
 import { getStudentByAuthUid } from '@/lib/firestore/students';
 import { apiError } from '@/lib/http/api-error';
@@ -42,6 +44,13 @@ export async function POST(request: NextRequest) {
       }
       return apiError('You do not have admin access.', 403);
     }
+
+    clearWorkspaceOwnerCache();
+    await ensureAdminSampleData(decoded.uid, {
+      email,
+      name: decoded.name ?? email,
+    });
+    await recordLoginSession(decoded, 'admin', { workspaceOwnerId: decoded.uid });
 
     return buildAuthResponse(sessionUserFromToken(decoded, { role: 'admin' }), signIn.idToken, {
       rememberMe: parsed.data.rememberMe,

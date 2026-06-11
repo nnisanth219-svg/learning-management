@@ -5,7 +5,8 @@ import { Badge, Button, Card, PageLoader } from '@/components/ui';
 import { APP_BRAND } from '@/lib/branding';
 import { NOTIFICATIONS } from '@/data/mock';
 import type { Notification } from '@/data/types';
-import { AlertTriangle, Award, Bell, BookOpen, CheckCheck, Lock, Mail, Shield, UserPlus, Users } from 'lucide-react';
+import { AlertTriangle, Award, Bell, BookOpen, CheckCheck, Lock, Mail, UserPlus } from 'lucide-react';
+import { TeamUsersPanel } from '@/components/dashboard/team-users-panel';
 import { useSearchParams } from 'next/navigation';
 import { Suspense, useEffect, useState } from 'react';
 
@@ -95,41 +96,7 @@ function SettingsPageContent() {
       )}
 
       {activeTab === 'team' && (
-        <div className="grid gap-6 lg:grid-cols-2">
-          <Card padding="md">
-            <h3 className="flex items-center gap-2 font-display font-bold">
-              <Users className="h-5 w-5 text-primary" /> Admin Users
-            </h3>
-            <div className="mt-4 space-y-3">
-              {[
-                { name: 'Super Admin', email: 'admin@eduvantage.com', role: 'Super Admin' },
-                { name: 'Sarah Mitchell', email: 'sarah@eduvantage.com', role: 'Course Manager' },
-              ].map((user) => (
-                <div key={user.email} className="flex items-center justify-between rounded-xl border border-border/60 p-4">
-                  <div>
-                    <p className="font-medium">{user.name}</p>
-                    <p className="text-xs text-muted">{user.email}</p>
-                  </div>
-                  <Badge variant="primary">{user.role}</Badge>
-                </div>
-              ))}
-            </div>
-            <Button className="mt-4" size="sm">Add User</Button>
-          </Card>
-          <Card padding="md">
-            <h3 className="flex items-center gap-2 font-display font-bold">
-              <Shield className="h-5 w-5 text-primary" /> Roles
-            </h3>
-            <div className="mt-4 space-y-2">
-              {['Super Admin', 'Course Manager', 'Analytics Viewer'].map((role) => (
-                <div key={role} className="flex items-center justify-between rounded-xl border border-border/60 px-4 py-3">
-                  <span className="text-sm font-medium">{role}</span>
-                  <Button variant="outline" size="sm">Edit</Button>
-                </div>
-              ))}
-            </div>
-          </Card>
-        </div>
+        <TeamUsersPanel />
       )}
 
       {activeTab === 'notifications' && (

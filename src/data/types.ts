@@ -3,6 +3,20 @@ export type CourseStatus = 'draft' | 'published' | 'archived';
 export type StudentStatus = 'active' | 'inactive' | 'graduated' | 'suspended';
 export type EnrollmentStatus = 'new' | 'pending' | 'approved' | 'rejected';
 
+export type PlatformUserRole = 'admin' | 'student';
+
+export interface PlatformUser {
+  id: string;
+  authUid: string;
+  displayName: string;
+  email: string;
+  role: PlatformUserRole;
+  studentId?: string;
+  studentCode?: string;
+  lastLoginAt: string;
+  createdAt: string;
+}
+
 export interface Course {
   id: string;
   title: string;
